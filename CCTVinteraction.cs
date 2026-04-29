@@ -4,10 +4,9 @@ public class CCTVinteraction : MonoBehaviour, interfaceInteractable
 {
     [SerializeField] private GameObject crosshairUI;
     [SerializeField] private FirstPersonController playerController;
+    [SerializeField] private Camera mainCamera; // Drag your camera here in Inspector
     [SerializeField]
     private float scrollSpeed = 0.1f, minZoom = 60f, maxZoom = 120f, smoothTime = .01f;
-
-    private Camera mainCamera;
 
     void Start()
     {
@@ -15,8 +14,6 @@ public class CCTVinteraction : MonoBehaviour, interfaceInteractable
         {
             playerController = FindObjectOfType<FirstPersonController>();
         }
-
-        mainCamera = Camera.main;
 
         if (mainCamera != null)
         {
@@ -41,11 +38,14 @@ public class CCTVinteraction : MonoBehaviour, interfaceInteractable
         if (crosshairUI != null && crosshairUI.activeSelf && mainCamera != null)
         {
             float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            Debug.Log($"Trying to zoom in on {gameObject.name}");
+
+            Debug.Log(CCTVZoomManager.ZoomTarget);
 
             if (scrollInput != 0)
             {
                 float newFOV = mainCamera.fieldOfView - scrollInput * scrollSpeed;
-                CCTVZoomManager.ZoomTarget = Mathf.Clamp(newFOV, maxZoom, minZoom);
+                CCTVZoomManager.ZoomTarget = Mathf.Clamp(newFOV, minZoom, maxZoom);
             }
 
             // Create a local variable to hold the velocity
