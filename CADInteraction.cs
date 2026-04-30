@@ -49,31 +49,36 @@ public class CADInteraction : MonoBehaviour, IComputerInteractable
 
     public void EnterComputerMode()
     {
-        if (!isMouseOverComputer) return; // Only allow entering computer mode if mouse is over the computer
+        if (!isMouseOverComputer) return;
         if (isInComputerMode) return;
 
         isInComputerMode = true;
-        //transitionTimer = 0f;
 
-        if(mainCamera != null)
-        {
-            CCTVZoomManager.ZoomTarget = 60f; // Reset zoom when exiting computer mode
-            CCTVZoomManager.CurrentFOV = 60f; // Ensure FOV is reset immediately
-            CCTVZoomManager.ZoomVelocity = 0f;// Reset zoom velocity to prevent carryover
-
-            mainCamera.fieldOfView = CCTVZoomManager.CurrentFOV; // Ensure FOV is reset immediately
-        }
-
-
-        // Captures current seated camera state
+        // Save seated position FIRST (before moving camera)
         seatedCameraPos = mainCamera.transform.position;
         seatedCameraRot = mainCamera.transform.rotation;
+
+        // Reset CCTV zoom
+        if (mainCamera != null)
+        {
+            CCTVZoomManager.ZoomTarget = 60f;
+            CCTVZoomManager.CurrentFOV = 60f;
+            CCTVZoomManager.ZoomVelocity = 0f;
+            mainCamera.fieldOfView = 60f;
+        }
+
+        // NOW snap camera to computer position
+        mainCamera.transform.position = computerScreenPosition.position;
+        mainCamera.transform.rotation = computerScreenPosition.rotation;
 
         if (controller != null)
         {
             controller.SetCanMove(false);
             controller.SetCursorLocked(false);
+            controller.SetCameraLocked(true);
         }
+
+        computerCanvasGroup.alpha = 1f;
 
         if (playerAnimator != null)
             playerAnimator.SetBool("IsSitting", true);
@@ -131,78 +136,26 @@ public class CADInteraction : MonoBehaviour, IComputerInteractable
 
     void Update()
     {
+        CheckMouseHover();
 
-        CheckMouseHover();// Initial check to set mouse hover state
-
-        if (!isInComputerMode && transitionTimer == 0f && !returningToSeatView)
+        if (!isInComputerMode && !returningToSeatView)
             return;
 
-        // Note: The original code had smooth transitions using Lerp, but for a more immediate snap to position, we can directly set the camera's position and rotation without interpolation. If you want to keep the smooth transition, you can uncomment the Lerp code and adjust the transitionDuration as needed.
-        // 🔵 ENTER COMPUTER MODE
-        /*if (isInComputerMode)
-        {
-            transitionTimer += Time.deltaTime;
-            float t = Mathf.Clamp01(transitionTimer / transitionDuration);
-
-            mainCamera.transform.position =
-                Vector3.Lerp(seatedCameraPos, computerScreenPosition.position, t);
-
-            mainCamera.transform.rotation =
-                Quaternion.Lerp(seatedCameraRot, computerScreenPosition.rotation, t);
-
-            computerCanvasGroup.alpha = t;
-        }
-        // 🔴 RETURN TO SEATED VIEW
-        else if (returningToSeatView)
-        {
-            transitionTimer += Time.deltaTime;
-            float t = Mathf.Clamp01(transitionTimer / transitionDuration);
-
-            mainCamera.transform.position =
-                Vector3.Lerp(computerScreenPosition.position, seatedCameraPos, t);
-
-            mainCamera.transform.rotation =
-                Quaternion.Lerp(computerScreenPosition.rotation, seatedCameraRot, t);
-
-            computerCanvasGroup.alpha = 1f - t;
-
-            if (t >= 1f)
-            {
-                returningToSeatView = false;
-                transitionTimer = 0f;
-            }
-        }*/
-        // 🔵 ENTER COMPUTER MODE (SNAP)
-        if (isInComputerMode)
-        {
-            if (controller != null)
-            {
-                controller.SetCanMove(false);
-                controller.SetCursorLocked(false); // cursor FREE for UI
-                controller.SetCameraLocked(true);  // camera frozen
-            }
-            mainCamera.transform.position = computerScreenPosition.position;
-            mainCamera.transform.rotation = computerScreenPosition.rotation;
-
-            computerCanvasGroup.alpha = 1f;
-        }
-
         // 🔴 RETURN TO SEATED VIEW (SNAP)
-        else if (returningToSeatView)
+        if (returningToSeatView)
         {
             if (controller != null)
             {
                 controller.SetCanMove(false);
-                controller.SetCursorLocked(true);  // lock cursor back to center
-                controller.SetCameraLocked(false); // restore camera control
+                controller.SetCursorLocked(true);
+                controller.SetCameraLocked(false);
             }
+
             mainCamera.transform.position = seatedCameraPos;
             mainCamera.transform.rotation = seatedCameraRot;
-
-            computerCanvasGroup.alpha = 1f;
+            computerCanvasGroup.alpha = 0f;
 
             returningToSeatView = false;
-            transitionTimer = 0f;
         }
     }
 } 

@@ -6,7 +6,7 @@ public class CCTVinteraction : MonoBehaviour, interfaceInteractable
     [SerializeField] private FirstPersonController playerController;
     [SerializeField] private Camera mainCamera; // Drag your camera here in Inspector
     [SerializeField]
-    private float scrollSpeed = 0.1f, minZoom = 60f, maxZoom = 120f, smoothTime = .01f;
+    private float scrollSpeed = 500f, minZoom = 30f, maxZoom = 80f, smoothTime = .01f;
 
     void Start()
     {
