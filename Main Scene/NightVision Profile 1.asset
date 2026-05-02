@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.HighDefinition.Runtime::UnityEngine.Rendering.HighDefinition.FilmGrain
   active: 1
   type:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   intensity:
     m_OverrideState: 1
@@ -40,7 +40,7 @@ MonoBehaviour:
   active: 1
   mode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   meteringMode:
     m_OverrideState: 0
     m_Value: 2
@@ -49,7 +49,7 @@ MonoBehaviour:
     m_Value: 1
   fixedExposure:
     m_OverrideState: 1
-    m_Value: -5
+    m_Value: 15
   compensation:
     m_OverrideState: 0
     m_Value: 0
@@ -207,8 +207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.HighDefinition.Runtime::UnityEngine.Rendering.HighDefinition.ColorAdjustments
   active: 1
   postExposure:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 3
   contrast:
     m_OverrideState: 0
     m_Value: 0

@@ -7,14 +7,18 @@ public class TimeSystem : MonoBehaviour
     private float timer = 0f;
 
     public int currentHour = 12;
+    public int currentMinute = 0;
 
     public TextMeshProUGUI clockText;
 
-    public CrimeSystem crimeSystem; // 👈 LINKED SYSTEM
+    public CrimeSystem crimeSystem;
 
     void Update()
     {
         timer += Time.deltaTime;
+
+        // Update clock display EVERY frame
+        UpdateClock();
 
         if (timer >= secondsPerHour)
         {
@@ -26,23 +30,24 @@ public class TimeSystem : MonoBehaviour
     void AdvanceHour()
     {
         currentHour++;
+        currentMinute = 0;
         Debug.Log("Hour: " + currentHour);
 
         if (currentHour > 12)
             currentHour = 1;
 
-        // 🔥 TRIGGER CRIME SCHEDULE EACH HOUR
         if (crimeSystem != null)
         {
-            //The event hook (or notification) for the crime system to schedule a crime each hour
             crimeSystem.ScheduleCrime(secondsPerHour);
         }
-
-        UpdateClock();
     }
 
     void UpdateClock()
     {
-        clockText.text = currentHour + ":00 AM";
+        // Calculate minutes based on timer progress through the hour
+        currentMinute = Mathf.RoundToInt((timer / secondsPerHour) * 60f);
+
+        // Format as HH:MM with leading zeros
+        clockText.text = currentHour.ToString("D2") + ":" + currentMinute.ToString("D2") + " AM";
     }
 }

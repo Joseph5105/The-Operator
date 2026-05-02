@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering;
 
 public class CADSystem : MonoBehaviour
 {
@@ -16,10 +17,11 @@ public class CADSystem : MonoBehaviour
     {
         string selectedCrime = crimeDropdown.options[crimeDropdown.value].text;
         string selectedLocation = locationDropdown.options[locationDropdown.value].text;
+        string selectedUnit = unitDropdown.options[unitDropdown.value].text;
 
         Crime active = crimeManager.activeCrime;
 
-        if(active != null && active.crimeType == selectedCrime && active.location == selectedLocation)
+        if(active != null && active.crimeType == selectedCrime && active.location == selectedLocation && active.unitNeeded.Contains(selectedUnit))
         {
             //resultText.text = "Dispatch successful! Unit is on the way.";
             Debug.Log("Dispatch successful! Unit is on the way.");
